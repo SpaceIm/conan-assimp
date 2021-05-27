@@ -120,6 +120,18 @@ class Assimp(ConanFile):
                self.options.with_xgl
 
     @property
+    def _depends_on_kuba_zip(self):
+        return self.options.with_3mf_exporter
+
+    @property
+    def _depends_on_poly2tri(self):
+        return self.options.with_blend or self.options.with_ifc
+
+    @property
+    def _depends_on_rapidjson(self):
+        return self.options.with_gltf or self.options.with_gltf_exporter
+
+    @property
     def _depends_on_zlib(self):
         return self.options.with_assbin or self.options.with_assbin_exporter or \
                self.options.with_assxml_exporter or self.options.with_blend or self.options.with_fbx or \
@@ -135,11 +147,11 @@ class Assimp(ConanFile):
         self.requires("utfcpp/3.1.2")
         if self._depends_on_irrxml:
             self.requires("irrxml/1.2")
-        if self.options.with_3mf_exporter:
+        if self._depends_on_kuba_zip:
             self.requires("kuba-zip/0.1.31")
-        if self.options.with_blend or self.options.with_ifc:
+        if self._depends_on_poly2tri:
             self.requires("poly2tri/cci.20130502")
-        if self.options.with_gltf or self.options.with_gltf_exporter:
+        if self._depends_on_rapidjson:
             self.requires("rapidjson/cci.20200410")
         if self._depends_on_zlib:
             self.requires("zlib/1.2.11")
@@ -197,6 +209,9 @@ class Assimp(ConanFile):
         tools.rmdir(os.path.join(self.package_folder, "lib", "pkgconfig"))
 
     def package_info(self):
+        self.cpp_info.names["cmake_find_package"] = "assimp"
+        self.cpp_info.names["cmake_find_package_multi"] = "assimp"
+        self.cpp_info.names["pkg_config"] = "assimp"
         self.cpp_info.libs = tools.collect_libs(self)
         if self.settings.os == "Linux":
             self.cpp_info.system_libs = ["rt", "m", "pthread"]
