@@ -111,6 +111,20 @@ class Assimp(ConanFile):
         if self.options.shared:
             del self.options.fPIC
 
+    @property
+    def _depends_on_irrxml(self):
+        return self.options.with_3mf or self.options.with_3mf_exporter or self.options.with_amf or \
+               self.options.with_collada or self.options.with_collada_exporter or \
+               self.options.with_irr or self.options.with_irrmesh or \
+               self.options.with_ogre or self.options.with_x3d or self.options.with_x3d_exporter or \
+               self.options.with_xgl
+
+    @property
+    def _depends_on_zlib(self):
+        return self.options.with_assbin or self.options.with_assbin_exporter or \
+               self.options.with_assxml_exporter or self.options.with_blend or self.options.with_fbx or \
+               self.options.with_q3bsp or self.options.with_x or self.options.with_xgl
+
     def requirements(self):
         # TODO: unvendor others libs:
         # - clipper (required by IFC importer): can't be unvendored because CCI
@@ -119,8 +133,7 @@ class Assimp(ConanFile):
         # - openddlparser
         self.requires("minizip/1.2.11")
         self.requires("utfcpp/3.1.2")
-        if self.options.with_3mf or self.options.with_amf or self.options.with_collada or \
-           self.options.with_irr or self.options.with_ogre or self.options.with_x3d or self.options.with_xgl:
+        if self._depends_on_irrxml:
             self.requires("irrxml/1.2")
         if self.options.with_3mf_exporter:
             self.requires("kuba-zip/0.1.31")
@@ -128,9 +141,7 @@ class Assimp(ConanFile):
             self.requires("poly2tri/cci.20130502")
         if self.options.with_gltf or self.options.with_gltf_exporter:
             self.requires("rapidjson/cci.20200410")
-        if self.options.with_assbin or self.options.with_assbin_exporter or \
-           self.options.with_assxml_exporter or self.options.with_blend or self.options.with_fbx or \
-           self.options.with_q3bsp or self.options.with_x or self.options.self.options.with_xgl:
+        if self._depends_on_zlib:
             self.requires("zlib/1.2.11")
 
     def source(self):
@@ -146,6 +157,9 @@ class Assimp(ConanFile):
         # Take care that these vendored libs are not used
         for vendor in ["irrXML", "poly2tri", "rapidjson", "unzip", "utf8cpp", "zip"]:
             tools.rmdir(os.path.join(self._source_subfolder, "contrib", vendor))
+        if not self._depends_on_irrxml:
+            tools.replace_in_file(os.path.join(self._source_subfolder, "CMakeLists.txt"),
+                                  "FIND_PACKAGE( IrrXML REQUIRED )", "")
 
     def _configure_cmake(self):
         if self._cmake:
