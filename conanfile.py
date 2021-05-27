@@ -201,6 +201,8 @@ class Assimp(ConanFile):
         self.cpp_info.names["cmake_find_package_multi"] = "assimp"
         self.cpp_info.names["pkg_config"] = "assimp"
         self.cpp_info.libs = tools.collect_libs(self)
+        if self.settings.compiler == "Visual Studio" and self.options.shared:
+            self.cpp_info.defines.append("ASSIMP_DLL")
         if self.settings.os == "Linux":
             self.cpp_info.system_libs = ["rt", "m", "pthread"]
         if not self.options.shared:
