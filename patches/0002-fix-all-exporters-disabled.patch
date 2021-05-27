@@ -1,3 +1,5 @@
+patch from https://github.com/assimp/assimp/pull/2759
+
 --- a/code/Common/Exporter.cpp
 +++ b/code/Common/Exporter.cpp
 @@ -105,90 +105,88 @@ void ExportScene3MF( const char*, IOSystem*, const aiScene*, const ExportPropert
