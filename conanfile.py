@@ -112,14 +112,6 @@ class Assimp(ConanFile):
             del self.options.fPIC
 
     @property
-    def _depends_on_irrxml(self):
-        return self.options.with_3mf or self.options.with_3mf_exporter or self.options.with_amf or \
-               self.options.with_collada or self.options.with_collada_exporter or \
-               self.options.with_irr or self.options.with_irrmesh or \
-               self.options.with_ogre or self.options.with_x3d or self.options.with_x3d_exporter or \
-               self.options.with_xgl
-
-    @property
     def _depends_on_kuba_zip(self):
         return self.options.with_3mf_exporter
 
@@ -145,8 +137,7 @@ class Assimp(ConanFile):
         # - openddlparser
         self.requires("minizip/1.2.11")
         self.requires("utfcpp/3.1.2")
-        if self._depends_on_irrxml:
-            self.requires("irrxml/1.2")
+        self.requires("irrxml/1.2")
         if self._depends_on_kuba_zip:
             self.requires("kuba-zip/0.1.31")
         if self._depends_on_poly2tri:
@@ -169,9 +160,6 @@ class Assimp(ConanFile):
         # Take care that these vendored libs are not used
         for vendor in ["irrXML", "poly2tri", "rapidjson", "unzip", "utf8cpp", "zip"]:
             tools.rmdir(os.path.join(self._source_subfolder, "contrib", vendor))
-        if not self._depends_on_irrxml:
-            tools.replace_in_file(os.path.join(self._source_subfolder, "CMakeLists.txt"),
-                                  "FIND_PACKAGE( IrrXML REQUIRED )", "")
 
     def _configure_cmake(self):
         if self._cmake:
