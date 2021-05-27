@@ -209,4 +209,3 @@ class Assimp(ConanFile):
             stdcpp_library = tools.stdcpp_library(self)
             if stdcpp_library:
                 self.cpp_info.system_libs.append(stdcpp_library)
-
